@@ -7,6 +7,40 @@ import traceback
 
 from Utils import calculate, data_utils, database, service, time_utils
 
+from sqlalchemy import Column, Integer, String, Float, ARRAY, DateTime, Text
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+Base = declarative_base()
+db_string = "mysql+pymysql://sip:jZSS7GX7@192.168.1.223:33060/sipiot"
+engine = create_engine(db_string)
+Session = sessionmaker(bind=engine)
+
+
+class DeviceLog(Resource):
+    __tablename__ = "DeviceLog"
+    id = Column(Integer, primary_key=True)
+    device_id = Column(String)
+    action = Column(String)
+    created_log_at = Column(DateTime)
+    change_fields = Column(Text)
+    status = Column(String)
+    name = Column(String)
+    device_type = Column(String)
+    gateway_id = Column(String)
+    platform = Column(String)
+    version = Column(String)
+    area_id = Column(String)
+    location = Column(String)
+    mac_address = Column(String)
+    node_id = Column(Integer)
+    state_update_duration = Column(Integer)
+    online = Column(Integer)
+    settings = Column(String)
+    data = Column(Text)
+
+
 def getPhase_params(
     light_down_mac,
     photo_table_mac,
@@ -27,6 +61,11 @@ def getPhase_params(
     try:
         # Get DeviceLog, and only in time range, we need to improve this
         # deviceLog_df = database.queryTable(tableName="DeviceLog")
+        session = Session()
+        reading_data = session.query(DeviceLog).filter(DeviceLog.id == "1").all()
+        deviceLog_df = pd.DataFrame(reading_data)
+        print("Device Log df Shape: ", deviceLog_df.shape)
+
         # Fake data cuz we don't have those yet
         deviceLog_df = pd.read_csv("./DeviceLog_201911191340.csv")
     except Exception as e:
@@ -125,7 +164,7 @@ calAB_parser.add_argument("tableName", type=str, required=False)
 calAB_parser.add_argument("host_ip", type=str, required=False)
 calAB_parser.add_argument("database_name", type=str, required=False)
 calAB_parser.add_argument("user", type=str, required=False)
-calAB_parser.add_argument("password", type=str,required=False)
+calAB_parser.add_argument("password", type=str, required=False)
 
 
 class calculate_AB(Resource):
