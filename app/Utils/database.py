@@ -30,6 +30,6 @@ def queryTable(
     engine = create_engine(db_string)
     connection = engine.connect()
 
-    object_df = pd.read_sql_query(buildQuery(tableName), connection)
+    object_df = pd.read_sql(buildQuery(tableName), connection)
     return object_df
 

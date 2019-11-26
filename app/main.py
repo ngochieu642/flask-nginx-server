@@ -12,6 +12,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+# from Utils import database
+
 Base = declarative_base()
 db_string = "mysql+pymysql://sip:jZSS7GX7@192.168.1.223:33060/sipiot"
 engine = create_engine(db_string)
@@ -60,11 +62,14 @@ def getPhase_params(
 
     try:
         # Get DeviceLog, and only in time range, we need to improve this
-        # deviceLog_df = database.queryTable(tableName="DeviceLog")
-        session = Session()
-        reading_data = session.query(DeviceLog).filter(DeviceLog.id == "1").all()
-        deviceLog_df = pd.DataFrame(reading_data)
-        print("Device Log df Shape: ", deviceLog_df.shape)
+        deviceLog_df = database.queryTable(
+            tableName="DeviceLog",
+            host_ip="192.168.1.223",
+            database_name="sipiot",
+            port=33060,
+            user="sip",
+            password="jZSS7GX7",
+        )
 
         # Fake data cuz we don't have those yet
         deviceLog_df = pd.read_csv("./DeviceLog_201911191340.csv")
@@ -295,9 +300,24 @@ class calculate_dim(Resource):
         return {"Dim": calDim, "percendDim": calDim * 100 / 255}
 
 
+class getDataframe(Resource):
+    def get(self):
+        db_URI = "mysql+pymysql://sip:jZSS7GX7@192.168.1.223:33060/sipiot"
+        print("Database String: ", db_URI)
+        engine = create_engine(db_URI)
+        deviceLog_df = pd.read_sql_table("DeviceLog", con=engine)
+        deviceLog_df["time"] = pd.to_datetime(deviceLog_df["created_log_at"])
+        deviceLog_df["time64"] = deviceLog_df["time"].apply(time_utils.time2Int)
+        deviceLog_df["value"] = deviceLog_df.apply(
+            lambda row: data_utils.extractValue(row), axis=1
+        )
+        return deviceLog_df["time64"].to_list()
+
+
 # Add endpoint
 api.add_resource(calculate_AB, "/calAB")
 api.add_resource(calculate_dim, "/calDim")
+api.add_resource(getDataframe, "/dataframe")
 
 
 @app.route("/")
