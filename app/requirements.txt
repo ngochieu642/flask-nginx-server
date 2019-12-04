@@ -1,7 +1,9 @@
 Flask
 Cython
 pandas
-scikit-learn
 matplotlib
+numpy
 SQLAlchemy
 Flask-RESTful
+PyMySQL
+scikit-learn
