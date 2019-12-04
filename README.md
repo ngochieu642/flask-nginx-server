@@ -51,7 +51,7 @@ GET
 - `cd app/` \
 Choose to run on Local or using docker:
 - `python app.py`: Port 5000
-- `docker-compose up --build -d`: Port 8080
+- `docker-compose up --build -d`: Port 5555
 
 ## Issue
 
