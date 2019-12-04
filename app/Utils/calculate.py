@@ -44,18 +44,18 @@ def getAB_fromDevice(y_device_mac, x_device_mac, dataframe, showReport=True):
         print("Train Error: ", train_error)
         print("Test Error: ", test_error)
 
-        plt.figure(figsize=(20, 10))
+        # plt.figure(figsize=(20, 10))
 
-        plt.scatter(x=X_train, y=y_train, label="training", s=200)
-        plt.scatter(x=X_test, y=y_test, label="testing", s=200)
-        plt.legend()
+        # plt.scatter(x=X_train, y=y_train, label="training", s=200)
+        # plt.scatter(x=X_test, y=y_test, label="testing", s=200)
+        # plt.legend()
 
-        x_linear = np.linspace(X[x_device_mac].min(), X[x_device_mac].max(), 1000)
-        y_linear = lm.coef_[0] * x_linear + lm.intercept_
+        # x_linear = np.linspace(X[x_device_mac].min(), X[x_device_mac].max(), 1000)
+        # y_linear = lm.coef_[0] * x_linear + lm.intercept_
 
-        plt.plot(x_linear, y_linear, c="green")
-        plt.xlabel("X")
-        plt.ylabel("Y")
+        # plt.plot(x_linear, y_linear, c="green")
+        # plt.xlabel("X")
+        # plt.ylabel("Y")
 
     return lm.coef_[0], lm.intercept_
 
