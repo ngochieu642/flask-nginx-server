@@ -2,7 +2,7 @@ version: '3.1'
 services:
   nginx:
     image: nginx:1.13.7
-    container_name: nginx
+    container_name: sip_nginx
     depends_on:
       - flask 
     volumes:
@@ -10,19 +10,16 @@ services:
     networks:
       - my-network
     ports:
-      - 80:80
+      - 5555:80
 
   flask:
     build:
       context : ./
-      dockerfile: Dockerfile
+      dockerfile: Flask.Dockerfile
     image: flask:0.0.1
-    container_name: flask
+    container_name: sip_flask
     volumes:
-      - ./:/code
-    environment:
-      - FLASK_APP=/code/main.py
-    command: flask run --host=0.0.0.0
+      - ./:/app
     networks:
       my-network:
         aliases:
