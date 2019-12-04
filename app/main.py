@@ -311,7 +311,9 @@ class getDataframe(Resource):
         deviceLog_df["value"] = deviceLog_df.apply(
             lambda row: data_utils.extractValue(row), axis=1
         )
-        return deviceLog_df["time64"].to_list()
+
+        # return deviceLog_df["time64"].to_list()
+        return {"shape": deviceLog_df.shape, "columns":list(deviceLog_df.columns)}
 
 
 # Add endpoint
