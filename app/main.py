@@ -73,6 +73,7 @@ def getPhase_params(
 
         # Fake data cuz we don't have those yet
         deviceLog_df = pd.read_csv("./DeviceLog_201911191340.csv")
+        
     except Exception as e:
         print("Type Error: ", e)
         print(traceback.format_exc())
