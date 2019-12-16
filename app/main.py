@@ -62,14 +62,14 @@ def getPhase_params(
 
     try:
         # Get DeviceLog, and only in time range, we need to improve this
-        deviceLog_df = database.queryTable(
-            tableName="DeviceLog",
-            host_ip="192.168.1.223",
-            database_name="sipiot",
-            port=33060,
-            user="sip",
-            password="jZSS7GX7",
-        )
+        # deviceLog_df = database.queryTable(
+        #     tableName="DeviceLog",
+        #     host_ip="192.168.1.223",
+        #     database_name="sipiot",
+        #     port=33060,
+        #     user="sip",
+        #     password="jZSS7GX7",
+        # )
 
         # Fake data cuz we don't have those yet
         deviceLog_df = pd.read_csv("./DeviceLog_201911191340.csv")
