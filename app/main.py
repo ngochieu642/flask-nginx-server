@@ -48,7 +48,7 @@ def getPhase_params(
         print("DATAFRAME COLUMNS: ", deviceLog_df.columns)
 
         # Fake data
-        # deviceLog_df = pd.read_csv("./DeviceLog_201911191340.csv")
+        deviceLog_df = pd.read_csv("./DeviceLog.csv")
 
     except Exception as e:
         print("Type Error: ", e)
