@@ -4,43 +4,11 @@ from flask_restful import Api, Resource, reqparse
 import os
 import pandas as pd
 import traceback
+import requests
 
-from Utils import calculate, data_utils, database, service, time_utils
+from Utils import calculate, data_utils, database, service, time_utils, constant
 
-from sqlalchemy import Column, Integer, String, Float, ARRAY, DateTime, Text
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-
-# from Utils import database
-
-Base = declarative_base()
-db_string = "mysql+pymysql://sip:jZSS7GX7@192.168.1.223:33060/sipiot"
-engine = create_engine(db_string)
-Session = sessionmaker(bind=engine)
-
-
-class DeviceLog(Resource):
-    __tablename__ = "DeviceLog"
-    id = Column(Integer, primary_key=True)
-    device_id = Column(String)
-    action = Column(String)
-    created_log_at = Column(DateTime)
-    change_fields = Column(Text)
-    status = Column(String)
-    name = Column(String)
-    device_type = Column(String)
-    gateway_id = Column(String)
-    platform = Column(String)
-    version = Column(String)
-    area_id = Column(String)
-    location = Column(String)
-    mac_address = Column(String)
-    node_id = Column(Integer)
-    state_update_duration = Column(Integer)
-    online = Column(Integer)
-    settings = Column(String)
-    data = Column(Text)
+BACKEND_DEVICELOG = "http://192.168.1.36:3000/api/v3/DeviceLogs/queryGeneral"
 
 
 def getPhase_params(
@@ -60,20 +28,28 @@ def getPhase_params(
         photo_facedown_mac,
     ]
 
-    try:
-        # Get DeviceLog, and only in time range, we need to improve this
-        # deviceLog_df = database.queryTable(
-        #     tableName="DeviceLog",
-        #     host_ip="192.168.1.223",
-        #     database_name="sipiot",
-        #     port=33060,
-        #     user="sip",
-        #     password="jZSS7GX7",
-        # )
+    print("\n\nSELECTED DEVICES: ", selected_devices_mac)
 
-        # Fake data cuz we don't have those yet
-        deviceLog_df = pd.read_csv("./DeviceLog_201911191340.csv")
-        
+    try:
+        # Real Data using Backend API
+        payload = {
+            "arrayDevice": [selected_devices_mac],
+            "[arrayTime][0]": [phase0_startTime, phase0_endTime],
+            "[arrayTime][1]": [phase1_startTime, phase1_endTime],
+        }
+
+        response = requests.get(BACKEND_DEVICELOG, payload)
+        deviceLog_df = pd.DataFrame.from_dict(response.json()["data"])
+
+        print(
+            "\n\n\nYAYYYYYYYY! GOT THE DATAFRAME FROM BACKEND, shape of it: ",
+            deviceLog_df.shape,
+        )
+        print("DATAFRAME COLUMNS: ", deviceLog_df.columns)
+
+        # Fake data
+        # deviceLog_df = pd.read_csv("./DeviceLog_201911191340.csv")
+
     except Exception as e:
         print("Type Error: ", e)
         print(traceback.format_exc())
@@ -84,7 +60,7 @@ def getPhase_params(
         return {"error": "Device Log has length = 0"}
 
     # Choose Device
-    selected_df = deviceLog_df[deviceLog_df["mac_address"].isin(selected_devices_mac)]
+    selected_df = deviceLog_df[deviceLog_df[constant.KW_MAC_ADDRESS].isin(selected_devices_mac)]
 
     # Validate selected_df
     if not selected_df.shape[0]:
@@ -92,7 +68,7 @@ def getPhase_params(
 
     # Enrich data
     try:
-        selected_df["time"] = pd.to_datetime(selected_df["created_log_at"])
+        selected_df["time"] = pd.to_datetime(selected_df[constant.KW_CREATED_LOG_AT])
         selected_df["time64"] = selected_df["time"].apply(time_utils.time2Int)
         selected_df["value"] = selected_df.apply(
             lambda row: data_utils.extractValue(row), axis=1
@@ -166,22 +142,11 @@ calAB_parser.add_argument("phase0_endTime", type=str, required=True)
 calAB_parser.add_argument("phase1_startTime", type=str, required=True)
 calAB_parser.add_argument("phase1_endTime", type=str, required=True)
 calAB_parser.add_argument("setPoint", type=int, required=True)
-calAB_parser.add_argument("tableName", type=str, required=False)
-calAB_parser.add_argument("host_ip", type=str, required=False)
-calAB_parser.add_argument("database_name", type=str, required=False)
-calAB_parser.add_argument("user", type=str, required=False)
-calAB_parser.add_argument("password", type=str, required=False)
 
 
 class calculate_AB(Resource):
     def get(self):
         args = calAB_parser.parse_args()
-
-        tableName = args["tableName"]
-        host_ip = args["host_ip"]
-        database_name = args["database_name"]
-        user = args["user"]
-        password = args["password"]
 
         LIGHT_DOWN_MAC = args["light_down_mac"]
         PHOTO_TABLE_MAC = args["photo_table_mac"]
@@ -301,26 +266,9 @@ class calculate_dim(Resource):
         return {"Dim": calDim, "percendDim": calDim * 100 / 255}
 
 
-class getDataframe(Resource):
-    def get(self):
-        db_URI = "mysql+pymysql://sip:jZSS7GX7@192.168.1.223:33060/sipiot"
-        print("Database String: ", db_URI)
-        engine = create_engine(db_URI)
-        deviceLog_df = pd.read_sql_table("DeviceLog", con=engine)
-        deviceLog_df["time"] = pd.to_datetime(deviceLog_df["created_log_at"])
-        deviceLog_df["time64"] = deviceLog_df["time"].apply(time_utils.time2Int)
-        deviceLog_df["value"] = deviceLog_df.apply(
-            lambda row: data_utils.extractValue(row), axis=1
-        )
-
-        # return deviceLog_df["time64"].to_list()
-        return {"shape": deviceLog_df.shape, "columns":list(deviceLog_df.columns)}
-
-
 # Add endpoint
 api.add_resource(calculate_AB, "/calAB")
 api.add_resource(calculate_dim, "/calDim")
-api.add_resource(getDataframe, "/dataframe")
 
 
 @app.route("/")

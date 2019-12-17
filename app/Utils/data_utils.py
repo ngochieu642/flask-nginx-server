@@ -3,17 +3,18 @@ import numpy as np
 import re
 import math
 
+from . import constant
 
 def extractValue(eachRow):
     for (key, value) in eachRow.items():
-        if key == "device_type" and value == "PHOTO":
+        if key == constant.KW_DEVICE_TYPE and value == "PHOTO":
             data = json.loads(eachRow["data"])
 
             if "photo" in data.keys():
                 return data["photo"]
             else:
                 return np.nan
-        elif key == "device_type" and value == "LIGHT":
+        elif key == constant.KW_DEVICE_TYPE and value == "LIGHT":
             data = json.loads(eachRow["data"])
 
             if "dimmers" in data.keys():

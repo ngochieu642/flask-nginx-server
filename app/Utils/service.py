@@ -3,6 +3,7 @@ from sklearn.cluster import KMeans
 import functools
 import pandas as pd
 
+from . import constant
 
 def getClusterDataframe(start_time, end_time, dataframe):
     inRange_df = data_utils.getDataframe_inRange(
@@ -16,11 +17,11 @@ def getClusterDataframe(start_time, end_time, dataframe):
 
     canbeUsed_df = inRange_df[inRange_df["action"] == "updated"]
     canbeUsed_df = canbeUsed_df[
-        ["time", "time64", "device_type", "data", "mac_address", "value"]
+        ["time", "time64", constant.KW_DEVICE_TYPE, "data", constant.KW_MAC_ADDRESS, "value"]
     ]
 
     noOfCluster = (
-        canbeUsed_df.groupby(by=["mac_address"]).count().reset_index().mean()[any]
+        canbeUsed_df.groupby(by=[constant.KW_MAC_ADDRESS]).count().reset_index().mean()[any]
     )
     km = KMeans(
         n_clusters=int(noOfCluster),
@@ -33,13 +34,13 @@ def getClusterDataframe(start_time, end_time, dataframe):
 
     canbeUsed_df["label"] = km.fit_predict(canbeUsed_df[["time64"]])
 
-    uniqueMacs = canbeUsed_df["mac_address"].unique()
+    uniqueMacs = canbeUsed_df[constant.KW_MAC_ADDRESS].unique()
 
     uniqueMacs_df_list = []
 
     for macAddr in uniqueMacs:
         uniqueMacs_df_list.append(
-            canbeUsed_df[canbeUsed_df["mac_address"] == macAddr][
+            canbeUsed_df[canbeUsed_df[constant.KW_MAC_ADDRESS] == macAddr][
                 ["time64", "value", "label"]
             ]
             .rename(columns={"value": macAddr})
