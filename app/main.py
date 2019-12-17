@@ -6,7 +6,7 @@ import pandas as pd
 import traceback
 import requests
 
-from Utils import calculate, data_utils, database, service, time_utils, constant
+from Utils import calculate, data_utils, service, time_utils, constant
 
 BACKEND_DEVICELOG = "http://192.168.1.36:3000/api/v3/DeviceLogs/queryGeneral"
 
