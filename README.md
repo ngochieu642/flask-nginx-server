@@ -55,5 +55,5 @@ Choose to run on Local or using docker:
 
 ## Issue
 
-- Could not query from the database yet.
-- Temporary solution: Read Data from .csv file
+- Could not query from the real database yet.
+- Temporary solution: Use Mock Data from .csv file
