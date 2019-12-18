@@ -8,7 +8,7 @@ import requests
 
 from Utils import calculate, data_utils, service, time_utils, constant
 
-BACKEND_DEVICELOG = "http://192.168.1.36:3000/api/v3/DeviceLogs/queryGeneral"
+BACKEND_DEVICELOG = os.environ["BACKEND_DEVICELOG"]
 
 
 def getPhase_params(
@@ -60,7 +60,9 @@ def getPhase_params(
         return {"error": "Device Log has length = 0"}
 
     # Choose Device
-    selected_df = deviceLog_df[deviceLog_df[constant.KW_MAC_ADDRESS].isin(selected_devices_mac)]
+    selected_df = deviceLog_df[
+        deviceLog_df[constant.KW_MAC_ADDRESS].isin(selected_devices_mac)
+    ]
 
     # Validate selected_df
     if not selected_df.shape[0]:
