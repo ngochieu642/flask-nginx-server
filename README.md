@@ -17,7 +17,9 @@ GET
 
 [Local Python](http://localhost:5000/calAB?light_down_mac=00124b00168ac785&photo_table_mac=00124b00168ac7d5&photo_facedown_mac=00124b00168ad1b6&photo_faceup_mac=00124b001684eed2&phase0_startTime=2019-11-19%2003:01:00&phase0_endTime=2019-11-19%2003:23:00&phase1_startTime=2019-11-19%2003:24:00&phase1_endTime=2019-11-19%2004:15:00&setPoint=250)
 
-[Container](http://localhost:5555/calAB?light_down_mac=00124b00168ac785&photo_table_mac=00124b00168ac7d5&photo_facedown_mac=00124b00168ad1b6&photo_faceup_mac=00124b001684eed2&phase0_startTime=2019-11-19%2003:01:00&phase0_endTime=2019-11-19%2003:23:00&phase1_startTime=2019-11-19%2003:24:00&phase1_endTime=2019-11-19%2004:15:00&setPoint=250)
+[Docker - With NGINX](http://localhost:5555/calAB?light_down_mac=00124b00168ac785&photo_table_mac=00124b00168ac7d5&photo_facedown_mac=00124b00168ad1b6&photo_faceup_mac=00124b001684eed2&phase0_startTime=2019-11-19%2003:01:00&phase0_endTime=2019-11-19%2003:23:00&phase1_startTime=2019-11-19%2003:24:00&phase1_endTime=2019-11-19%2004:15:00&setPoint=250)
+
+[Docker - Without NGINX](http://localhost:8080/calAB?light_down_mac=00124b00168ac785&photo_table_mac=00124b00168ac7d5&photo_facedown_mac=00124b00168ad1b6&photo_faceup_mac=00124b001684eed2&phase0_startTime=2019-11-19%2003:01:00&phase0_endTime=2019-11-19%2003:23:00&phase1_startTime=2019-11-19%2003:24:00&phase1_endTime=2019-11-19%2004:15:00&setPoint=206)
 
 ### Where
 
@@ -39,7 +41,9 @@ GET
 
 [Local Python](http://localhost:5000/calDim?light_down_mac=00124b00168ac785&photo_table_mac=00124b00168ac7d5&photo_facedown_mac=00124b00168ad1b6&photo_faceup_mac=00124b001684eed2&phase0_startTime=2019-11-19%2003:01:00&phase0_endTime=2019-11-19%2003:23:00&phase1_startTime=2019-11-19%2003:24:00&phase1_endTime=2019-11-19%2004:15:00&setPoint=261&upValue=432)
 
-[Container](http://localhost:5555/calDim?light_down_mac=00124b00168ac785&photo_table_mac=00124b00168ac7d5&photo_facedown_mac=00124b00168ad1b6&photo_faceup_mac=00124b001684eed2&phase0_startTime=2019-11-19%2003:01:00&phase0_endTime=2019-11-19%2003:23:00&phase1_startTime=2019-11-19%2003:24:00&phase1_endTime=2019-11-19%2004:15:00&setPoint=261&upValue=432)
+[Docker - With NGINX](http://localhost:5555/calDim?light_down_mac=00124b00168ac785&photo_table_mac=00124b00168ac7d5&photo_facedown_mac=00124b00168ad1b6&photo_faceup_mac=00124b001684eed2&phase0_startTime=2019-11-19%2003:01:00&phase0_endTime=2019-11-19%2003:23:00&phase1_startTime=2019-11-19%2003:24:00&phase1_endTime=2019-11-19%2004:15:00&setPoint=261&upValue=432)
+
+[Docker - Without NGINX](http://localhost:8080/calDim?light_down_mac=00124b00168ac785&photo_table_mac=00124b00168ac7d5&photo_facedown_mac=00124b00168ad1b6&photo_faceup_mac=00124b001684eed2&phase0_startTime=2019-11-19%2003:01:00&phase0_endTime=2019-11-19%2003:23:00&phase1_startTime=2019-11-19%2003:24:00&phase1_endTime=2019-11-19%2004:15:00&setPoint=261&upValue=432)
 
 ### Where
 
@@ -48,10 +52,13 @@ GET
 
 ## How to Run
 
-- `cd app/` \
+- `cd app/`
+
 Choose to run on Local or using docker:
+
 - `python app.py`: Port 5000
-- `docker-compose up --build -d`: Port 5555
+- With NGINX: `master` branch : `bash build.sh`: Port 5555
+- Without NGINX: `feature/no-nginx` branch: `bash build.sh`: Port 8080
 
 ## Issue
 
