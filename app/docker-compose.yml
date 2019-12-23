@@ -1,16 +1,5 @@
 version: '3.4'
 services:
-  nginx:
-    image: nginx:1.13.7
-    container_name: sip_nginx
-    depends_on:
-      - flask 
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    networks:
-      - my-network
-    ports:
-      - 5555:80
 
   flask:
     build:
@@ -22,12 +11,5 @@ services:
       - ./:/app
     environment:
      - BACKEND_DEVICELOG=http://192.168.1.36:3000/api/v3/DeviceLogs/queryGeneral
-    networks:
-      my-network:
-        aliases:
-          - flask-app
     ports:
       - 8080:5000
-
-networks:
-  my-network:
