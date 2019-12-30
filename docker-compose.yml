@@ -4,11 +4,11 @@ services:
     build:
       context : .
       dockerfile: Flask.Dockerfile
-    image: 148078527676.dkr.ecr.ap-southeast-1.amazonaws.com/sip-calculate-ab:3.0.0
+    image:  flask:0.0.1
     container_name: sip-calculate-ab
     environment:
-     - BACKEND_DEVICELOG_PROD=http://192.168.1.36:3000/api/v3/DeviceLogs/queryGeneral
-     - BACKEND_DEVICELOG_PREPROD=http://192.168.1.36:3000/api/v3/DeviceLogs/queryGeneral
+     - BACKEND_DEVICELOG_PROD=https://amazone/DeviceLogs/queryGeneral
+     - BACKEND_DEVICELOG_PREPROD=https://zalo/DeviceLogs/queryGeneral
      - BACKEND_DEVICELOG_DEV=http://192.168.1.36:3000/api/v3/DeviceLogs/queryGeneral
     ports:
       - 8080:5000

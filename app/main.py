@@ -8,7 +8,9 @@ import requests
 
 from Utils import calculate, data_utils, service, time_utils, constant
 
-BACKEND_DEVICELOG = os.environ["BACKEND_DEVICELOG"]
+BACKEND_DEVICELOG_DEV = os.environ["BACKEND_DEVICELOG_DEV"]
+BACKEND_DEVICELOG_PROD = os.environ["BACKEND_DEVICELOG_PROD"]
+BACKEND_DEVICELOG_PREPROD = os.environ["BACKEND_DEVICELOG_PREPROD"]
 
 
 def getPhase_params(
@@ -20,6 +22,7 @@ def getPhase_params(
     phase0_endTime,
     phase1_startTime,
     phase1_endTime,
+    environment,
 ):
     selected_devices_mac = [
         light_down_mac,
@@ -38,7 +41,16 @@ def getPhase_params(
             "[arrayTime][1]": [phase1_startTime, phase1_endTime],
         }
 
-        response = requests.get(BACKEND_DEVICELOG, payload)
+        # Switch between environments
+        api_backend = BACKEND_DEVICELOG_DEV
+        api_backend = BACKEND_DEVICELOG_PROD if (environment == "PROD") else api_backend
+        api_backend = (
+            BACKEND_DEVICELOG_PREPROD if (environment == "PRE_PROD") else api_backend
+        )
+
+        print("api to query: ", api_backend)
+
+        response = requests.get(api_backend, payload)
         deviceLog_df = pd.DataFrame.from_dict(response.json()["data"])
 
         print(
@@ -48,7 +60,7 @@ def getPhase_params(
         print("DATAFRAME COLUMNS: ", deviceLog_df.columns)
 
         # Fake data
-       # deviceLog_df = pd.read_csv("./DeviceLog.csv")
+        deviceLog_df = pd.read_csv("./DeviceLog.csv")
 
     except Exception as e:
         print("Type Error: ", e)
@@ -144,6 +156,7 @@ calAB_parser.add_argument("phase0_endTime", type=str, required=True)
 calAB_parser.add_argument("phase1_startTime", type=str, required=True)
 calAB_parser.add_argument("phase1_endTime", type=str, required=True)
 calAB_parser.add_argument("setPoint", type=int, required=True)
+calAB_parser.add_argument("environment", type=str, required=False)
 
 
 class calculate_AB(Resource):
@@ -161,6 +174,7 @@ class calculate_AB(Resource):
         phase1_endTime = args["phase1_endTime"]
 
         setPoint = args["setPoint"]
+        environment = args["environment"]
 
         selected_devices_mac = [
             LIGHT_DOWN_MAC,
@@ -179,6 +193,7 @@ class calculate_AB(Resource):
                 phase0_endTime,
                 phase1_startTime,
                 phase1_endTime,
+                environment,
             )
         except Exception as e:
             print("Type Error: ", e)
@@ -202,6 +217,66 @@ class calculate_AB(Resource):
             return {"error": "Error when trying to load calculate A B", "errstr": e}
 
         return {"A": A, "B": B}
+
+    def post(self):
+        print("\n\nPOST")
+        args = calAB_parser.parse_args()
+
+        # Extract params
+        LIGHT_DOWN_MAC = args["light_down_mac"]
+        PHOTO_TABLE_MAC = args["photo_table_mac"]
+        PHOTO_FACEDOWN_MAC = args["photo_facedown_mac"]
+        PHOTO_FACEUP_MAC = args["photo_faceup_mac"]
+
+        phase0_startTime = args["phase0_startTime"]
+        phase0_endTime = args["phase0_endTime"]
+        phase1_startTime = args["phase1_startTime"]
+        phase1_endTime = args["phase1_endTime"]
+
+        setPoint = args["setPoint"]
+        environment = args["environment"]
+
+        selected_devices_mac = [
+            LIGHT_DOWN_MAC,
+            PHOTO_TABLE_MAC,
+            PHOTO_FACEUP_MAC,
+            PHOTO_FACEDOWN_MAC,
+        ]
+
+        try:
+            phase0_A, phase0_B, phase1_A, phase1_B = getPhase_params(
+                LIGHT_DOWN_MAC,
+                PHOTO_TABLE_MAC,
+                PHOTO_FACEDOWN_MAC,
+                PHOTO_FACEUP_MAC,
+                phase0_startTime,
+                phase0_endTime,
+                phase1_startTime,
+                phase1_endTime,
+                environment,
+            )
+        except Exception as e:
+            print("Type Error: ", e)
+            print(traceback.format_exc())
+            return {
+                "error": "Error when trying to load Params from 2 Phases",
+                "errstr": e,
+            }
+
+        try:
+            A, B = calculate.calAB_from2Phase(
+                setPoint=setPoint,
+                phase0_a=phase0_A,
+                phase0_b=phase0_B,
+                phase1_a=phase1_A,
+                phase1_b=phase1_B,
+            )
+        except Exception as e:
+            print("Type Error: ", e)
+            print(traceback.format_exc())
+            return {"error": "Error when trying to load calculate A B", "errstr": e}
+
+        return {"A": A, "B": B}, 200
 
 
 calDim_parser = calAB_parser.copy()
