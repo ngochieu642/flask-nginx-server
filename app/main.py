@@ -96,7 +96,7 @@ def getPhase_params(
 
     # Get Phase
     try:
-        print("Retrieve phase 0 data...")
+        print("\nRetrieve phase 0 data...")
         phase0_df = service.getClusterDataframe(
             start_time=phase0_startTime, end_time=phase0_endTime, dataframe=selected_df,
         )
@@ -106,7 +106,7 @@ def getPhase_params(
         return {"error": "Error when trying to load phase 0 data", "errstr": e}
 
     try:
-        print("\nProcessing phase 0...")
+        print("Processing phase 0...")
         phase0_A, phase0_B = calculate.getAB_fromDevice(
             y_device_mac=photo_table_mac,
             x_device_mac=photo_faceup_mac,
@@ -121,7 +121,7 @@ def getPhase_params(
         }
 
     try:
-        print("Retrieve phase 1 data...")
+        print("\nRetrieve phase 1 data...")
         phase1_df = service.getClusterDataframe(
             start_time=phase1_startTime, end_time=phase1_endTime, dataframe=selected_df,
         )
@@ -131,7 +131,7 @@ def getPhase_params(
         return {"error": "Error when trying to load phase 1 data", "errstr": e}
 
     try:
-        print("\nProcessing phase 1...")
+        print("Processing phase 1...")
         phase1_A, phase1_B = calculate.getAB_fromDevice(
             y_device_mac=photo_table_mac,
             x_device_mac=light_down_mac,
