@@ -55,7 +55,11 @@ def getPhase_params(
         deviceLog_df = pd.DataFrame.from_dict(response.json()["data"])
 
         # Fake data
-        deviceLog_df = pd.read_csv("./DeviceLog.csv")
+        try:
+            deviceLog_df = pd.read_csv("./DeviceLog.csv")
+        except Exception as readErr:
+            print("Could not load fake data")
+            print(readErr)
 
         print(
             "\n\n\nGOT THE DATAFRAME FROM BACKEND, shape: ", deviceLog_df.shape,
