@@ -121,7 +121,11 @@ def getPhase_params(
         }
 
     try:
+<<<<<<< HEAD
         print("Retrieve phase 1 data...")
+=======
+        print("\nProcessing phase 1...")
+>>>>>>> aeddcb995db3210539abf4334a78fcdd5770c2d1
         phase1_df = service.getClusterDataframe(
             start_time=phase1_startTime, end_time=phase1_endTime, dataframe=selected_df,
         )
