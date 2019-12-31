@@ -6,6 +6,7 @@ import numpy as np
 
 
 def getAB_fromDevice(y_device_mac, x_device_mac, dataframe, showReport=True):
+    print("[calculate.py]getAB_fromDevice: dataframe shape: ",dataframe.columns)
     calculate_df = dataframe[[y_device_mac, x_device_mac, "date"]].dropna()
     calculate_df = calculate_df.loc[
         (calculate_df[y_device_mac] != 0) & (calculate_df[x_device_mac] != 0)

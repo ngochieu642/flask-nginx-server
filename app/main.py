@@ -55,7 +55,11 @@ def getPhase_params(
         deviceLog_df = pd.DataFrame.from_dict(response.json()["data"])
 
         # Fake data
-        deviceLog_df = pd.read_csv("./DeviceLog.csv")
+        try:
+            deviceLog_df = pd.read_csv("./DeviceLog.csv")
+        except Exception as readErr:
+            print("Could not load fake data")
+            print(readErr)
 
         print(
             "\n\n\nGOT THE DATAFRAME FROM BACKEND, shape: ", deviceLog_df.shape,
@@ -100,13 +104,21 @@ def getPhase_params(
         phase0_df = service.getClusterDataframe(
             start_time=phase0_startTime, end_time=phase0_endTime, dataframe=selected_df,
         )
+
+        # Logs
+        print("\nRetrieve phase 0 data...")
+        print("After enrich: ", selected_df.shape)
+        print("phase0_df shape: ", phase0_df.shape)
+
     except Exception as e:
         print("Type Error: ", e)
         print(traceback.format_exc())
         return {"error": "Error when trying to load phase 0 data", "errstr": e}
 
     try:
+        # Logs
         print("\nProcessing phase 0...")
+
         phase0_A, phase0_B = calculate.getAB_fromDevice(
             y_device_mac=photo_table_mac,
             x_device_mac=photo_faceup_mac,
@@ -121,16 +133,20 @@ def getPhase_params(
         }
 
     try:
-        print("\nProcessing phase 1...")
+        print("\nRetrieve phase 1 data...")
         phase1_df = service.getClusterDataframe(
             start_time=phase1_startTime, end_time=phase1_endTime, dataframe=selected_df,
         )
+        print("After enrich: ", selected_df.shape)
+        print("phase1_df shape: ", phase1_df.shape)
+        print("phase1_df columns: ", phase1_df.columns)
     except Exception as e:
         print("Type Error: ", e)
         print(traceback.format_exc())
         return {"error": "Error when trying to load phase 1 data", "errstr": e}
 
     try:
+        # Logs
         print("\nProcessing phase 1...")
         phase1_A, phase1_B = calculate.getAB_fromDevice(
             y_device_mac=photo_table_mac,
@@ -182,6 +198,84 @@ class calculate_AB(Resource):
 
         setPoint = args["setPoint"]
         environment = args["environment"]
+
+        selected_devices_mac = [
+            LIGHT_DOWN_MAC,
+            PHOTO_TABLE_MAC,
+            PHOTO_FACEUP_MAC,
+            PHOTO_FACEDOWN_MAC,
+        ]
+
+        try:
+            phase0_A, phase0_B, phase1_A, phase1_B = getPhase_params(
+                LIGHT_DOWN_MAC,
+                PHOTO_TABLE_MAC,
+                PHOTO_FACEDOWN_MAC,
+                PHOTO_FACEUP_MAC,
+                phase0_startTime,
+                phase0_endTime,
+                phase1_startTime,
+                phase1_endTime,
+                environment,
+            )
+        except Exception as e:
+            print("Type Error: ", e)
+            print(traceback.format_exc())
+            return {
+                "error": "Error when trying to load Params from 2 Phases",
+                "errstr": e,
+            }
+
+        try:
+            A, B = calculate.calAB_from2Phase(
+                setPoint=setPoint,
+                phase0_a=phase0_A,
+                phase0_b=phase0_B,
+                phase1_a=phase1_A,
+                phase1_b=phase1_B,
+            )
+        except Exception as e:
+            print("Type Error: ", e)
+            print(traceback.format_exc())
+            return {"error": "Error when trying to load calculate A B", "errstr": e}
+
+        # Return result 
+        result = {"A": A, "B": B}
+
+        # Logs
+        print("\nresult:\n", json.dumps(result, indent=1))
+
+        return result, 200
+
+    def post(self):
+        print("\n\nPOST")
+        args = calAB_parser.parse_args()
+
+        # Extract params
+        LIGHT_DOWN_MAC = args["light_down_mac"]
+        PHOTO_TABLE_MAC = args["photo_table_mac"]
+        PHOTO_FACEDOWN_MAC = args["photo_facedown_mac"]
+        PHOTO_FACEUP_MAC = args["photo_faceup_mac"]
+
+        phase0_startTime = args["phase0_startTime"]
+        phase0_endTime = args["phase0_endTime"]
+        phase1_startTime = args["phase1_startTime"]
+        phase1_endTime = args["phase1_endTime"]
+
+        setPoint = args["setPoint"]
+        environment = args["environment"]
+
+        # Check logs
+        print("Light down Mac: ", LIGHT_DOWN_MAC)
+        print("Photo table Mac: ", PHOTO_TABLE_MAC)
+        print("Photo facedown Mac: ", PHOTO_FACEDOWN_MAC)
+        print("Photo faceup Mac: ", PHOTO_FACEUP_MAC)
+        print("phase 0 start time: ", phase0_startTime)
+        print("phase 0 end time: ", phase0_endTime)
+        print("phase 1 start time: ", phase1_startTime)
+        print("phase 1 end time: ", phase1_endTime)
+        print("set point: ", setPoint)
+        print("environment: ", environment)
 
         selected_devices_mac = [
             LIGHT_DOWN_MAC,

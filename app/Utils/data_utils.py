@@ -55,6 +55,10 @@ def getDataframe_inRange(dataframe, start_time64, end_time64):
     """
     Get Dataframe that has time64 between start_time64 and end_time64
     """
+    # Logs
+    print("[data_utils.py]getDataframe_inRange start_time64: ", start_time64)
+    print("[data_utils.py]getDataframe_inRange end_time64: ", end_time64)
+
     return dataframe.loc[
         (dataframe["time64"] >= start_time64) & (dataframe["time64"] <= end_time64)
     ]
