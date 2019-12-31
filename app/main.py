@@ -100,17 +100,24 @@ def getPhase_params(
 
     # Get Phase
     try:
-        print("\nRetrieve phase 0 data...")
         phase0_df = service.getClusterDataframe(
             start_time=phase0_startTime, end_time=phase0_endTime, dataframe=selected_df,
         )
+
+        # Logs
+        print("\nRetrieve phase 0 data...")
+        print("After enrich: ", selected_df.shape)
+        print("phase0_df shape: ", phase0_df.shape)
+
     except Exception as e:
         print("Type Error: ", e)
         print(traceback.format_exc())
         return {"error": "Error when trying to load phase 0 data", "errstr": e}
 
     try:
-        print("Processing phase 0...")
+        # Logs
+        print("\nProcessing phase 0...")
+
         phase0_A, phase0_B = calculate.getAB_fromDevice(
             y_device_mac=photo_table_mac,
             x_device_mac=photo_faceup_mac,
@@ -129,13 +136,17 @@ def getPhase_params(
         phase1_df = service.getClusterDataframe(
             start_time=phase1_startTime, end_time=phase1_endTime, dataframe=selected_df,
         )
+        print("After enrich: ", selected_df.shape)
+        print("phase1_df shape: ", phase1_df.shape)
+        print("phase1_df columns: ", phase1_df.columns)
     except Exception as e:
         print("Type Error: ", e)
         print(traceback.format_exc())
         return {"error": "Error when trying to load phase 1 data", "errstr": e}
 
     try:
-        print("Processing phase 1...")
+        # Logs
+        print("\nProcessing phase 1...")
         phase1_A, phase1_B = calculate.getAB_fromDevice(
             y_device_mac=photo_table_mac,
             x_device_mac=light_down_mac,
@@ -227,9 +238,12 @@ class calculate_AB(Resource):
             print(traceback.format_exc())
             return {"error": "Error when trying to load calculate A B", "errstr": e}
 
-        # Return result
+        # Return result 
         result = {"A": A, "B": B}
-        print("\nresult: \n", json.dumps(result, indent=1))
+
+        # Logs
+        print("\nresult:\n", json.dumps(result, indent=1))
+
         return result, 200
 
     def post(self):
@@ -304,7 +318,9 @@ class calculate_AB(Resource):
 
         # Return result
         result = {"A": A, "B": B}
-        print("\nresult: \n", json.dumps(result, indent=1))
+
+        # Logs
+        print("\nresult:\n", json.dumps(result, indent=1))
         return result, 200
 
 calDim_parser = calAB_parser.copy()

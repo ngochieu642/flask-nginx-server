@@ -12,6 +12,12 @@ def getClusterDataframe(start_time, end_time, dataframe):
         end_time64=time_utils.fromString_toInt64(end_time),
     )
 
+    # Logs
+    print("[service.py]getClusterDataframe dataframe input shape: ", dataframe.shape)
+    print("[service.py]getClusterDataframe start_time: ", start_time)
+    print("[service.py]getClusterDataframe end_time: ", end_time)
+    print("[service.py]getClusterDataframe inRange_df shape: ", inRange_df.shape)
+
     if not inRange_df.shape[0]:
         return
 

@@ -50,7 +50,7 @@
       },
       "args": ["run", "--no-debugger", "--no-reload"],
       "jinja": true,
-      "cwd": "app"
+      "cwd": "./app"
     },
     {
       "name": "Python: Current File (External Terminal)",
