@@ -1,0 +1,67 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File (Integrated Terminal)",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Remote Attach",
+      "type": "python",
+      "request": "attach",
+      "port": 5678,
+      "host": "localhost",
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "."
+        }
+      ]
+    },
+    {
+      "name": "Python: Module",
+      "type": "python",
+      "request": "launch",
+      "module": "enter-your-module-name-here",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Django",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "console": "integratedTerminal",
+      "args": ["runserver", "--noreload", "--nothreading"],
+      "django": true
+    },
+    {
+      "name": "Python: Flask",
+      "type": "python",
+      "request": "launch",
+      "module": "flask",
+      "env": {
+        "FLASK_APP": "app/main.py",
+        "BACKEND_DEVICELOG_PROD": "https://amazone/DeviceLogs/queryGeneral",
+        "BACKEND_DEVICELOG_PREPROD": "https://zalo/DeviceLogs/queryGeneral",
+        "BACKEND_DEVICELOG_DEV": "http://192.168.1.36:3000/api/v3/DeviceLogs/queryGeneral"
+      },
+      "args": ["run", "--no-debugger", "--no-reload"],
+      "jinja": true,
+<<<<<<< HEAD
+      "cwd": "app"
+=======
+      "cwd": "./app"
+>>>>>>> 3221a51b41e74593617f6be6ffe07f7b0e6a745b
+    },
+    {
+      "name": "Python: Current File (External Terminal)",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "externalTerminal"
+    }
+  ]
+}
