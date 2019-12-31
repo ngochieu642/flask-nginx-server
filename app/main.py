@@ -225,7 +225,7 @@ class calculate_AB(Resource):
 
         # Return result
         result = {"A": A, "B": B}
-        print("result: ", json.dumps(result, indent=1))
+        print("\nresult: \n", json.dumps(result, indent=1))
         return result, 200
 
     def post(self):
@@ -300,7 +300,7 @@ class calculate_AB(Resource):
 
         # Return result
         result = {"A": A, "B": B}
-        print("result: ", json.dumps(result, indent=1))
+        print("\nresult: \n", json.dumps(result, indent=1))
         return result, 200
 
 calDim_parser = calAB_parser.copy()
